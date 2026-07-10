@@ -435,7 +435,7 @@ local function ToggleLoopSpeed()
     LoopSpeedToggle.Text = "Loop Speed (Highly Bannable): " .. (LoopSpeedEnabled and "ON" or "OFF")
     if LoopSpeedEnabled then
         ApplyDesiredSpeed()
-    elseif not SpeedEnabled then
+    else
         ResetWalkSpeed()
     end
 end
