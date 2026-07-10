@@ -434,12 +434,9 @@ local function ToggleLoopSpeed()
     LoopSpeedEnabled = not LoopSpeedEnabled
     LoopSpeedToggle.Text = "Loop Speed (Highly Bannable): " .. (LoopSpeedEnabled and "ON" or "OFF")
     if LoopSpeedEnabled then
-        if LoopSpeedEnabled and LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid.WalkSpeed = GetSpeedValueFromLabel()
-            end
-        end
+        ApplyDesiredSpeed()
+    elseif not SpeedEnabled then
+        ResetWalkSpeed()
     end
 end
 
