@@ -36,7 +36,7 @@ local LoopSpeedKey = nil
 
 -- Spin Settings
 local SpinEnabled = false
-local SpinSpeed = 2
+local SpinSpeed = 5
 local SpinKey = nil
 
 -- No Slow Settings
@@ -52,8 +52,8 @@ local Keys = {}
 local FlyKey = nil
 local waitingForFlyKey = false
 
--- Noclip Settings
-local NoclipEnabled = false
+-- NoClip Settings
+local NoClipEnabled = false
 local NoClipKey = nil
 local OriginalCollision = {}
 
@@ -214,7 +214,7 @@ local LoopSpeedToggle = createButton("Loop Speed (Highly Bannable): OFF", 160, M
 local SpinValueLabel = createButton("Spin Speed: 5", 200, MovementFrame)
 local SpinToggle = createButton("Spin: OFF", 240, MovementFrame)
 local NoSlowToggle = createButton("No Slow: OFF", 40, Movement2Frame)
-local NoclipToggle = createButton("Noclip: OFF", 80, Movement2Frame)
+local NoClipToggle = createButton("NoClip: OFF", 80, Movement2Frame)
 local SitButton = createButton("Sit", 120, Movement2Frame)
 local FlyKeybind = createButton("Fly Keybind: (Choose Key)", 160, Movement2Frame)
 local FlySpeedLabel = createButton("Fly Speed: 50", 200, Movement2Frame)
@@ -566,6 +566,18 @@ end
 
 local function ApplyFly()
     if FlyEnabled then
+        if Flyconnection then
+            Flyconnection:Disconnect()
+            Flyconnection=nil
+        end
+        if bv then
+            bv:Destroy()
+            bv = nil
+        end
+        if bg then
+            bg:Destroy()
+            bg = nil
+        end
         bv = Instance.new("BodyVelocity")
         bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
         bv.Parent = HRP
@@ -575,7 +587,7 @@ local function ApplyFly()
         bg.P = 50000
         bg.Parent = HRP
 
-        connection = RunService.RenderStepped:Connect(function()
+        Flyconnection = RunService.RenderStepped:Connect(function()
             local cam = workspace.CurrentCamera
 
             bg.CFrame = CFrame.lookAt(HRP.Position, HRP.Position + cam.CFrame.LookVector)
@@ -613,9 +625,18 @@ local function ApplyFly()
             end
         end)
     else
-        if connection then connection:Disconnect() end
-        if bv then bv:Destroy() end
-        if bg then bg:Destroy() end
+        if Flyconnection then
+            Flyconnection:Disconnect()
+            Flyconnection=nil
+        end
+        if bv then
+            bv:Destroy()
+            bv=nil
+        end
+        if bg then 
+            bg:Destroy()
+            bg=nil
+        end
     end
 end
 
@@ -629,12 +650,9 @@ RunService.RenderStepped:Connect(function()
     if LoopSpeedEnabled then
         ApplyDesiredSpeed()
     end
-    if SpinEnabled then
-        ApplySpin()
-    end
 end)
 
-Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+Players.LocalPlayer.CharacterAdded:Connect(function(character)
     Character = character
     HRP = Character:WaitForChild("HumanoidRootPart")
     if LoopSpeedEnabled then
@@ -646,8 +664,8 @@ Players.LocalPlayer.CharacterAdded:Connect(function(Character)
     if FlyEnabled then
         ApplyFly()
     end
-    if NoclipEnabled then
-        ApplyNoclip()
+    if NoClipEnabled then
+        ApplyNoClip()
     end
 end)
 
@@ -688,13 +706,13 @@ local function DecreaseRadius()
     AimbotRadiusLabel.Text = "Radius: " .. AimbotRadius
 end
 
-local function ApplyNoclip()
-    if NoclipEnabled then
-        if connection then
-            connection:Disconnect()
-            connection = nil
+local function ApplyNoClip()
+    if NoClipEnabled then
+        if NoClipconnection then
+            NoClipconnection:Disconnect()
+            NoClipconnection = nil
         end
-        connection = RunService.Stepped:Connect(function()
+        NoClipconnection = RunService.Stepped:Connect(function()
             local character = game.Players.LocalPlayer.Character
             if character then
                 for _, part in ipairs(character:GetDescendants()) do
@@ -708,9 +726,9 @@ local function ApplyNoclip()
             end
         end)
     else
-        if connection then
-            connection:Disconnect()
-            connection = nil
+        if NoClipconnection then
+            NoClipconnection:Disconnect()
+            NoClipconnection = nil
         end
         local character = game.Players.LocalPlayer.Character
         if character then
@@ -724,11 +742,28 @@ local function ApplyNoclip()
     end
 end
 
-local function ToggleNoclip()
-    NoclipEnabled = not NoclipEnabled
-    NoclipToggle.Text = "Noclip: " .. (NoclipEnabled and "ON" or "OFF")
-    ApplyNoclip()
+local function ToggleNoClip()
+    NoClipEnabled = not NoClipEnabled
+    NoClipToggle.Text = "NoClip: " .. (NoClipEnabled and "ON" or "OFF")
+    ApplyNoClip()
 end
+
+Players.LocalPlayer.CharacterRemoving:Connect(function()
+    if Flyconnection then
+        Flyconnection:Disconnect()
+        Flyconnection = nil
+    end
+
+    if NoClipConnection then
+        NoClipConnection:Disconnect()
+        NoClipConnection = nil
+    end
+
+    Spin = nil
+    bv = nil
+    bg = nil
+    table.clear(OriginalCollision)
+end)
 
 -- Buttons Attachments
 ESPToggle.MouseButton1Click:Connect(ToggleESP)
@@ -757,7 +792,7 @@ SpinValueLabel.MouseButton1Click:Connect(StartSpinInput)
 FlySpeedLabel.MouseButton1Click:Connect(StartFlyInput)
 NoSlowToggle.MouseButton1Click:Connect(ToggleNoSlow)
 FlyToggle.MouseButton1Click:Connect(ToggleFly)
-NoclipToggle.MouseButton1Click:Connect(ToggleNoclip)
+NoClipToggle.MouseButton1Click:Connect(ToggleNoClip)
 SitButton.MouseButton1Click:Connect(function()
     if LocalPlayer.Character then
         local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
