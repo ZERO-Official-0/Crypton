@@ -9,6 +9,10 @@ local Camera = workspace.CurrentCamera
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HRP = Character:WaitForChild("HumanoidRootPart")
 
+
+-- Menu Settings
+local MenuKey = Enum.KeyCode.RightControl
+
 -- ESP Settings
 local ESPEnabled = false
 local SkeletonESP = false
@@ -175,7 +179,7 @@ local KeybindsTitle = Instance.new("TextLabel")
 KeybindsTitle.Size = UDim2.new(1, 0, 0, 30)
 KeybindsTitle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 KeybindsTitle.BorderSizePixel = 0
-KeybindsTitle.Text = "Keybinds"
+KeybindsTitle.Text = "Other Keybinds"
 KeybindsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 KeybindsTitle.Font = Enum.Font.SourceSansBold
 KeybindsTitle.TextSize = 18
@@ -219,6 +223,12 @@ local SitButton = createButton("Sit", 120, Movement2Frame)
 local FlyKeybind = createButton("Fly Keybind: (Choose Key)", 160, Movement2Frame)
 local FlySpeedLabel = createButton("Fly Speed: 50", 200, Movement2Frame)
 local FlyToggle = createButton("Fly (Highly Bannable): OFF", 240, Movement2Frame)
+local ESPKeyButton = createButton("ESP Key: (Choose Key)", 40, KeybindsFrame)
+local SpeedKeyButton = createButton("Speed Key: (Choose Key)", 80, KeybindsFrame)
+local LoopSpeedKeyButton = createButton("LoopSpeed Key: (Choose Key)", 120, KeybindsFrame)
+local NoClipKeyButton = createButton("NoClip Key: (Choose Key)", 160, KeybindsFrame)
+local SitKeyButton = createButton("Sit Key: (Choose Key)", 200, KeybindsFrame)
+local MenuKeyButton = createButton("Menu Key: RightControl", 240, KeybindsFrame)
 
 local PageFrames = {MainFrame, AimbotFrame, MovementFrame, Movement2Frame, KeybindsFrame}
 local CurrentPage = 1
@@ -646,15 +656,6 @@ local function ToggleFly()
     ApplyFly()
 end
 
-RunService.RenderStepped:Connect(function()
-    if LoopSpeedEnabled then
-        ApplyDesiredSpeed()
-    end
-    if SpinEnabled then
-        ApplySpin()
-    end
-end)
-
 Players.LocalPlayer.CharacterAdded:Connect(function(character)
     Character = character
     HRP = Character:WaitForChild("HumanoidRootPart")
@@ -694,7 +695,7 @@ local function ShowMessage(text)
     end)
 end
 
-local function ChangeKey()
+local function AimbotChangeKey()
     waitingForKey = true
     AimbotKeyLabel.Text = "Press a key..."
 end
@@ -777,11 +778,7 @@ BoxRainbowCheck.MouseButton1Click:Connect(ToggleBoxRainbow)
 AimbotToggle.MouseButton1Click:Connect(ToggleAimbot)
 AimbotRadiusToggle.MouseButton1Click:Connect(ToggleAimbotRadius)
 AimbotModeButton.MouseButton1Click:Connect(ToggleAimbotMode)
-AimbotKeyLabel.MouseButton1Click:Connect(ChangeKey)
-FlyKeybind.MouseButton1Click:Connect(function()
-    waitingForFlyKey = true
-    FlyKeybind.Text = "Press a key..."
-end)
+AimbotKeyLabel.MouseButton1Click:Connect(AimbotChangeKey)
 AimbotRadiusLabel.MouseButton1Click:Connect(IncreaseRadius)
 AimbotRadiusLabel.MouseButton2Click:Connect(DecreaseRadius)
 SpeedValueLabel.MouseButton1Click:Connect(StartSpeedInput)
@@ -803,6 +800,34 @@ SitButton.MouseButton1Click:Connect(function()
             humanoid.Sit = true
         end
     end
+end)
+FlyKeybind.MouseButton1Click:Connect(function()
+    waitingForFlyKey = true
+    FlyKeybind.Text = "Press a key..."
+end)
+ESPKeyButton.MouseButton1Click:Connect(function()
+    waitingForESPKey = true
+    ESPKeyButton.Text = "Press a key..."
+end)
+SpeedKeyButton.MouseButton1Click:Connect(function()
+    waitingForSpeedKey = true
+    SpeedKeyButton.Text = "Press a key..."
+end)
+LoopSpeedKeyButton.MouseButton1Click:Connect(function()
+    waitingForLoopSpeedKey = true
+    LoopSpeedKeyButton.Text = "Press a key..."
+end)
+NoClipKeyButton.MouseButton1Click:Connect(function()
+    waitingForNoClipKey = true
+    NoClipKeyButton.Text = "Press a key..."
+end)
+SitKeyButton.MouseButton1Click:Connect(function()
+    waitingForSitKey = true
+    SitKeyButton.Text = "Press a key..."
+end)
+MenuKeyButton.MouseButton1Click:Connect(function()
+    waitingForMenuKey = true
+    MenuKeyButton.Text = "Press a key..."
 end)
 
 UpdateMenuVisibility()
@@ -862,7 +887,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         return
     end
     if waitingForKey then
-        if input.KeyCode == Enum.KeyCode.RightControl or input.KeyCode == Enum.KeyCode.K then
+        if input.KeyCode == MenuKey or input.KeyCode == Enum.KeyCode.K then
             AimbotKey = Enum.KeyCode.B
             AimbotKeyLabel.Text = "Key: B"
             ShowMessage("RightControl and K keys are reserved!")
@@ -887,7 +912,91 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         waitingForFlyKey = false
         return
     end
-    if input.KeyCode == Enum.KeyCode.RightControl then
+    if waitingForESPKey then
+        if input.KeyCode == Enum.KeyCode.Escape then
+            if ESPKey then
+                ESPKeyButton.Text = "ESP Key: " .. Key.Name
+            else
+                ESPKeyButton.Text = "ESP Key (Choose Key): ..."
+            end
+        else
+            ESPKey = input.KeyCode
+            ESPKeyButton.Text = "ESP Key: " .. input.KeyCode.Name
+        end
+        waitingForESPKey = false
+        return
+    end
+    if waitingForSpeedKey then
+        if input.KeyCode == Enum.KeyCode.Escape then
+            if Key then
+                SpeedKeyButton.Text = "Speed Key: " .. SpeedKey.Name
+            else
+                SpeedKeyButton.Text = "Speed Key (Choose Key): ..."
+            end
+        else
+            SpeedKey = input.KeyCode
+            SpeedKeyButton.Text = "Speed Key: " .. input.KeyCode.Name
+        end
+        waitingForSpeedKey = false
+        return
+    end
+    if waitingForLoopSpeedKey then
+        if input.KeyCode == Enum.KeyCode.Escape then
+            if LoopSpeedKey then
+                LoopSpeedKeyButton.Text = "LoopSpeed Key: " .. LoopSpeedKey.Name
+            else
+                LoopSpeedKeyButton.Text = "LoopSpeed Key (Choose Key): ..."
+            end
+        else
+            LoopSpeedKey = input.KeyCode
+            LoopSpeedKeyButton.Text = "LoopSpeed Key: " .. input.KeyCode.Name
+        end
+        waitingForLoopSpeedKey = false
+        return
+    end
+    if waitingForNoClipKey then
+        if input.KeyCode == Enum.KeyCode.Escape then
+            if Key then
+                NoClipKeyButton.Text = "NoClip Key: " .. NoClipKey.Name
+            else
+                NoClipKeyButton.Text = "NoClip Key (Choose Key): ..."
+            end
+        else
+            NoClipKey = input.KeyCode
+            NoClipKeyButton.Text = "NoClip Key: " .. input.KeyCode.Name
+        end
+        waitingForNoClipKey = false
+        return
+    end
+    if waitingForSitKey then
+        if input.KeyCode == Enum.KeyCode.Escape then
+            if Key then
+                SitKeyButton.Text = "Sit Key: " .. SitKey.Name
+            else
+                SitKeyButton.Text = "Sit Key (Choose Key): ..."
+            end
+        else
+            SitKey = input.KeyCode
+            SitKeyButton.Text = "Sit Key: " .. input.KeyCode.Name
+        end
+        waitingForSitKey = false
+        return
+    end
+    if waitingForMenuKey then
+        if input.KeyCode == Enum.KeyCode.Escape then
+            if Key then
+                MenuKeyButton.Text = "Menu Key: " .. MenuKey.Name
+            else
+                MenuKeyButton.Text = "Menu Key (Choose Key): ..."
+            end
+        else
+            MenuKey = input.KeyCode
+            MenuKeyButton.Text = "Menu Key: " .. input.KeyCode.Name
+        end
+        waitingForMenuKey = false
+        return
+    end
+    if input.KeyCode == MenuKey then
         MenuVisible = not MenuVisible
         if MenuVisible then
             SetPage(CurrentPage)
@@ -898,6 +1007,21 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         ToggleAimbot()
     elseif FlyKey and input.KeyCode == FlyKey then
         ToggleFly()
+    elseif input.KeyCode == ESPKey then
+        ToggleESP()
+    elseif input.KeyCode == SpeedKey then
+        ApplyDesiredSpeed()
+    elseif input.KeyCode == LoopSpeedKey then
+        ToggleLoopSpeed()
+    elseif input.KeyCode == NoClipKey then
+        ToggleNoClip()
+    elseif input.KeyCode == SitKey then
+        if LocalPlayer.Character then
+            local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Sit = true
+            end
+        end
     end
     Keys[input.KeyCode] = true
 end)
@@ -1127,6 +1251,12 @@ RunService.RenderStepped:Connect(function()
         for _, drawing in pairs(Drawings) do
             drawing.Visible = false
         end
+    end
+    if LoopSpeedEnabled then
+        ApplyDesiredSpeed()
+    end
+    if SpinEnabled then
+        ApplySpin()
     end
 
     if AimbotRadiusVisible and LocalPlayer.Character then
