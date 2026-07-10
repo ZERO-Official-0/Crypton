@@ -1,4 +1,4 @@
--- Simple Cheat Menu with ESP, Aimbot, and Movement Features for Roblox Made by ZERO Sentinel (V2.0 BETA)
+-- Simple Cheat Menu with ESP, Aimbot, and Movement Features for Roblox Made by ZERO Sentinel (V2.0)
 
 -- Variables
 local Players = game:GetService("Players")
@@ -51,7 +51,7 @@ local NoSlowKey = nil
 local FlyEnabled = false
 local FlySpeed = 50
 local bv, bg
-local connection
+local Flyconnection
 local Keys = {}
 local FlyKey = nil
 local waitingForFlyKey = false
@@ -419,7 +419,7 @@ local function FinishSpeedInput(save)
         SpeedValueLabel.Text = "Speed: " .. currentSpeed
     end
     SpeedInputText = ""
-    if save and (SpeedEnabled or LoopSpeedEnabled) then
+    if save and LoopSpeedEnabled then
         ApplyDesiredSpeed()
     end
 end
@@ -435,8 +435,6 @@ local function ToggleLoopSpeed()
     LoopSpeedToggle.Text = "Loop Speed (Highly Bannable): " .. (LoopSpeedEnabled and "ON" or "OFF")
     if LoopSpeedEnabled then
         ApplyDesiredSpeed()
-    elseif not SpeedEnabled then
-        ResetWalkSpeed()
     end
 end
 
@@ -1270,13 +1268,6 @@ RunService.RenderStepped:Connect(function()
     else
         if Drawings["AimbotRadius"] then
             Drawings["AimbotRadius"].Visible = false
-        end
-    end
-
-    if LoopSpeedEnabled and LocalPlayer.Character then
-        local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = GetSpeedValueFromLabel()
         end
     end
 
