@@ -15,7 +15,8 @@ local SkeletonESP = false
 local BoxESP = false
 local SkeletonRainbow = false
 local BoxRainbow = false
-local DefaultColor = Color3.fromRGB(255, 255, 255) -- White
+local DefaultColor = Color3.fromRGB(255, 255, 255)
+local ESPKey = nil
 
 -- Aimbot Settings
 local AimbotEnabled = false
@@ -26,16 +27,21 @@ local AimbotKey = Enum.KeyCode.B
 
 -- Air Strafe Settings
 local AirStrafeEnabled = false
+local AirStrafeKey = nil
 
 -- Speed Settings
 local LoopSpeedEnabled = false
+local SpeedKey = nil
+local LoopSpeedKey = nil
 
 -- Spin Settings
 local SpinEnabled = false
-local SpinSpeed = 2 -- Degrees per frame
+local SpinSpeed = 2
+local SpinKey = nil
 
 -- No Slow Settings
 local NoSlowEnabled = false
+local NoSlowKey = nil
 
 -- Fly Settings
 local FlyEnabled = false
@@ -48,6 +54,8 @@ local waitingForFlyKey = false
 
 -- Noclip Settings
 local NoclipEnabled = false
+local NoClipKey = nil
+local OriginalCollision = {}
 
 -- Drawings
 local Drawings = {}
@@ -594,7 +602,7 @@ local function ApplyFly()
                 direction += Vector3.new(0, 1, 0)
             end
 
-            if Keys[Enum.KeyCode.Q] or Keys[Enum.KeyCode.RightControl] then
+            if Keys[Enum.KeyCode.Q] then
                 direction -= Vector3.new(0, 1, 0)
             end
 
@@ -623,6 +631,23 @@ RunService.RenderStepped:Connect(function()
     end
     if SpinEnabled then
         ApplySpin()
+    end
+end)
+
+Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+    Character = character
+    HRP = Character:WaitForChild("HumanoidRootPart")
+    if LoopSpeedEnabled then
+        ApplyDesiredSpeed()
+    end
+    if SpinEnabled then
+        ApplySpin()
+    end
+    if FlyEnabled then
+        ApplyFly()
+    end
+    if NoclipEnabled then
+        ApplyNoclip()
     end
 end)
 
@@ -663,6 +688,47 @@ local function DecreaseRadius()
     AimbotRadiusLabel.Text = "Radius: " .. AimbotRadius
 end
 
+local function ApplyNoclip()
+    if NoclipEnabled then
+        if connection then
+            connection:Disconnect()
+            connection = nil
+        end
+        connection = RunService.Stepped:Connect(function()
+            local character = game.Players.LocalPlayer.Character
+            if character then
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        if OriginalCollision[part] == nil then
+                            OriginalCollision[part] = part.CanCollide
+                        end
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        if connection then
+            connection:Disconnect()
+            connection = nil
+        end
+        local character = game.Players.LocalPlayer.Character
+        if character then
+            for part, collide in pairs(OriginalCollision) do
+                if part and part.Parent then
+                    part.CanCollide = collide
+                end
+            end
+        end
+        table.clear(OriginalCollision)
+    end
+end
+
+local function ToggleNoclip()
+    NoclipEnabled = not NoclipEnabled
+    NoclipToggle.Text = "Noclip: " .. (NoclipEnabled and "ON" or "OFF")
+    ApplyNoclip()
+end
 
 -- Buttons Attachments
 ESPToggle.MouseButton1Click:Connect(ToggleESP)
@@ -783,9 +849,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         waitingForFlyKey = false
         return
     end
-    if input.KeyCode == Enum.KeyCode.K then
-        ToggleESP()
-    elseif input.KeyCode == Enum.KeyCode.RightControl then
+    if input.KeyCode == Enum.KeyCode.RightControl then
         MenuVisible = not MenuVisible
         if MenuVisible then
             SetPage(CurrentPage)
