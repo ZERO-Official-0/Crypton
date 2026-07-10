@@ -650,6 +650,9 @@ RunService.RenderStepped:Connect(function()
     if LoopSpeedEnabled then
         ApplyDesiredSpeed()
     end
+    if SpinEnabled then
+        ApplySpin()
+    end
 end)
 
 Players.LocalPlayer.CharacterAdded:Connect(function(character)
