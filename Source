@@ -915,7 +915,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if waitingForESPKey then
         if input.KeyCode == Enum.KeyCode.Escape then
             if ESPKey then
-                ESPKeyButton.Text = "ESP Key: " .. Key.Name
+                ESPKeyButton.Text = "ESP Key: " .. ESPKey.Name
             else
                 ESPKeyButton.Text = "ESP Key (Choose Key): ..."
             end
@@ -928,7 +928,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
     if waitingForSpeedKey then
         if input.KeyCode == Enum.KeyCode.Escape then
-            if Key then
+            if SpeedKey then
                 SpeedKeyButton.Text = "Speed Key: " .. SpeedKey.Name
             else
                 SpeedKeyButton.Text = "Speed Key (Choose Key): ..."
@@ -956,7 +956,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
     if waitingForNoClipKey then
         if input.KeyCode == Enum.KeyCode.Escape then
-            if Key then
+            if NoClipKey then
                 NoClipKeyButton.Text = "NoClip Key: " .. NoClipKey.Name
             else
                 NoClipKeyButton.Text = "NoClip Key (Choose Key): ..."
@@ -970,7 +970,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
     if waitingForSitKey then
         if input.KeyCode == Enum.KeyCode.Escape then
-            if Key then
+            if SitKey then
                 SitKeyButton.Text = "Sit Key: " .. SitKey.Name
             else
                 SitKeyButton.Text = "Sit Key (Choose Key): ..."
@@ -984,7 +984,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
     if waitingForMenuKey then
         if input.KeyCode == Enum.KeyCode.Escape then
-            if Key then
+            if MenuKey then
                 MenuKeyButton.Text = "Menu Key: " .. MenuKey.Name
             else
                 MenuKeyButton.Text = "Menu Key (Choose Key): ..."
