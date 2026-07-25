@@ -37,6 +37,7 @@ local AirStrafeKey = nil
 local LoopSpeedEnabled = false
 local SpeedKey = nil
 local LoopSpeedKey = nil
+local DefaultSpeed = 16
 
 -- Spin Settings
 local SpinEnabled = false
@@ -46,6 +47,7 @@ local SpinKey = nil
 -- No Slow Settings
 local NoSlowEnabled = false
 local NoSlowKey = nil
+local NoSlowSpeed = 16
 
 -- Fly Settings
 local FlyEnabled = false
@@ -359,9 +361,14 @@ local function ToggleAirStrafe()
     AirStrafeToggle.Text = "Air Strafe: " .. (AirStrafeEnabled and "ON" or "OFF")
 end
 
-local function ToggleNoSlow()
-    NoSlowEnabled = not NoSlowEnabled
-    NoSlowToggle.Text = "No Slow: " .. (NoSlowEnabled and "ON" or "OFF")
+local function GetHumanoidSpeed()
+    if LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            return humanoid.WalkSpeed
+        end
+    end
+    return 16 -- Default Roblox walk speed
 end
 
 local function GetSpeedValueFromLabel()
@@ -383,7 +390,7 @@ local function ResetWalkSpeed()
     if LocalPlayer.Character then
         local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         if humanoid then
-            humanoid.WalkSpeed = 16
+            humanoid.WalkSpeed = DefaultSpeed
         end
     end
 end
@@ -431,12 +438,18 @@ local function StartSpeedInput()
 end
 
 local function ToggleLoopSpeed()
+    if not LoopSpeedEnabled then
+        DefaultSpeed = GetHumanoidSpeed()
+    end
     LoopSpeedEnabled = not LoopSpeedEnabled
     LoopSpeedToggle.Text = "Loop Speed (Highly Bannable): " .. (LoopSpeedEnabled and "ON" or "OFF")
     if LoopSpeedEnabled then
         ApplyDesiredSpeed()
     else
         ResetWalkSpeed()
+        if NoSlowEnabled then
+            NoSlowSpeed = DefaultSpeed
+        end
     end
 end
 
@@ -656,6 +669,33 @@ local function ToggleFly()
     ApplyFly()
 end
 
+local function ApplyNoSlow()
+    if LoopSpeedEnabled then
+        NoSlowSpeed = math.clamp(GetSpeedValueFromLabel(), 1, 500)
+    end
+    if NoSlowEnabled then
+        if LocalPlayer.Character then
+            local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = NoSlowSpeed
+            end
+        end
+    else
+        ResetWalkSpeed()
+    end
+end
+
+local function ToggleNoSlow()
+    if LoopSpeedEnabled then
+        NoSlowSpeed = math.clamp(GetSpeedValueFromLabel(), 1, 500)
+    else
+        NoSlowSpeed = GetHumanoidSpeed()
+    end
+    NoSlowEnabled = not NoSlowEnabled
+    ApplyNoSlow()
+    NoSlowToggle.Text = "No Slow: " .. (NoSlowEnabled and "ON" or "OFF")
+end
+
 Players.LocalPlayer.CharacterAdded:Connect(function(character)
     Character = character
     HRP = Character:WaitForChild("HumanoidRootPart")
@@ -670,6 +710,9 @@ Players.LocalPlayer.CharacterAdded:Connect(function(character)
     end
     if NoClipEnabled then
         ApplyNoClip()
+    end
+    if NoSlowEnabled then
+        ApplyNoSlow()
     end
 end)
 
@@ -1257,6 +1300,9 @@ RunService.RenderStepped:Connect(function()
     end
     if SpinEnabled then
         ApplySpin()
+    end
+    if NoSlowEnabled then
+        ApplyNoSlow()
     end
 
     if AimbotRadiusVisible and LocalPlayer.Character then
