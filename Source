@@ -930,10 +930,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         return
     end
     if waitingForKey then
-        if input.KeyCode == MenuKey or input.KeyCode == Enum.KeyCode.K then
+        if input.KeyCode == MenuKey then
             AimbotKey = Enum.KeyCode.B
             AimbotKeyLabel.Text = "Key: B"
-            ShowMessage("RightControl and K keys are reserved!")
+            ShowMessage("RightControl key is reserved for menu only!")
         else
             AimbotKey = input.KeyCode
             AimbotKeyLabel.Text = "Key: " .. input.KeyCode.Name
