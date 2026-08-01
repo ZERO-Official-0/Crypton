@@ -70,7 +70,7 @@ local Drawings = {}
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ESPMenu"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = game:GetService("CoreGui")
 
 local NotificationLabel = Instance.new("TextLabel")
 NotificationLabel.Size = UDim2.new(0, 300, 0, 30)
