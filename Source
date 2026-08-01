@@ -8,10 +8,17 @@ local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HRP = Character:WaitForChild("HumanoidRootPart")
-
+local queueteleport = queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport)
 
 -- Menu Settings
 local MenuKey = Enum.KeyCode.RightControl
+local isCryptonKept = true
+local ScriptURL = `loadstring(game:HttpGet("https://raw.githubusercontent.com/ZERO-Official-0/Crypton/main/Source"))()`
+game.Players.LocalPlayer.OnTeleport:Connect(function(State)
+	if isCryptonKept and queueteleport then
+		queueteleport(ScriptURL)
+	end
+end)
 
 -- ESP Settings
 local ESPEnabled = false
