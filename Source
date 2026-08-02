@@ -13,7 +13,7 @@ local queueteleport = queue_on_teleport or (syn and syn.queue_on_teleport) or (f
 -- Menu Settings
 local MenuKey = Enum.KeyCode.RightControl
 local isCryptonKept = true
-local ScriptURL = `loadstring(game:HttpGet("https://raw.githubusercontent.com/ZERO-Official-0/Crypton/main/Source"))()`
+local ScriptURL = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/ZERO-Official-0/Crypton/main/Source"))()'
 game.Players.LocalPlayer.OnTeleport:Connect(function(State)
 	if isCryptonKept and queueteleport then
 		queueteleport(ScriptURL)
@@ -67,6 +67,7 @@ local waitingForFlyKey = false
 
 -- NoClip Settings
 local NoClipEnabled = false
+local NoClipConnection = nil
 local NoClipKey = nil
 local OriginalCollision = {}
 
