@@ -1343,9 +1343,7 @@ local function isAirborne(humanoid)
     local state = humanoid:GetState()
     return state == Enum.HumanoidStateType.Freefall
         or state == Enum.HumanoidStateType.FallingDown
-        or state == Enum.HumanoidStateType.Falling
         or state == Enum.HumanoidStateType.Jumping
-        or state == Enum.HumanoidStateType.PlatformPound
 end
 
 local function onCharacterAdded(character)
